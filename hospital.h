@@ -3,8 +3,9 @@
 
 
 #define TAM_TABELA 51
-#define TAM_LISTA 10
 #define TAM_DEQUE 20
+#define TAM_LISTA 10
+#define TAM_PILHA 200
 
 
 typedef struct{
@@ -38,13 +39,13 @@ typedef struct{
 
 
 typedef struct{
-    Paciente dados[TAM_LISTA];
+    Paciente leitos[TAM_LISTA];
     int ocupados;
 }Lista;
 
 
 typedef struct{
-    Paciente dados;
+    Paciente vetor[TAM_PILHA];
     int topo;
 }Pilha;
 
