@@ -82,7 +82,7 @@ void inserir_deque(Deque *d, Paciente p){
     } 
     
     else{
-        insere_fim(d, p);
+        insere_final(d, p);
     }
 }
 

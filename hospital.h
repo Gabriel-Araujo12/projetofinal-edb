@@ -19,7 +19,7 @@ typedef struct{
 } Paciente;
 
 
-typedef struct{
+typedef struct No{
     Paciente dados;
     struct No *proximo;
 } No;
