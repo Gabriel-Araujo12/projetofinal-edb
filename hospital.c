@@ -1,57 +1,93 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#include <unistd.h>
+#include <string.h>
 #include "hospital.h"
 
-void ler_csv(const char *arquivo, Paciente pacientes[], int *quantidade){
-    FILE *arq = fopen(arquivo, "r");
-    if (!arquivo) {
+
+void carregar_pacientes(Tabela_Hash* tabela, const char* nome_arquivo) {
+    FILE* f = fopen(nome_arquivo, "r");
+    if (!f) {
         perror("Erro ao abrir o arquivo");
         exit(1);
     }
 
-    char linha[500];
-    int i = 0;
-
-    fgets(linha, 500, arquivo);
-
-    while (fgets(linha, 500, arquivo) && i < 50) {
-        char *token = strtok(linha, ";");
-        strcpy(pacientes[i].id, token);
-
-        token = strtok(NULL, ";");
-        strcpy(pacientes[i].nome, token);
-
-        token = strtok(NULL, ";");
-        pacientes[i].idade = atoi(token);
-
-        token = strtok(NULL, ";");
-        pacientes[i].sexo = token[0];
-
-        token = strtok(NULL, ";");
-        strcpy(pacientes[i].cpf, token);
-
-        token = strtok(NULL, ";");
-        pacientes[i].prioridade = atoi(token);
-
-        token = strtok(NULL, ";\n");
-        pacientes[i].atendido = atoi(token);
-
-        i++;
+    Paciente p;
+    while (fscanf(f, "%[^;];%[^;];%d;%c;%[^;];%d;%d\n", 
+        p.id, p.nome, &p.idade, &p.sexo, p.cpf, &p.prioridade, &p.atendido) == 7) {
+        inserir_tabela(tabela, p);
     }
 
-    *quantidade = i;
-    fclose(arquivo);
+    fclose(f);
 }
 
-int main(){
+
+void registrar_log(const char* msg) {
+    FILE* f = fopen("processamento.log", "a");
+    if (f) {
+        fprintf(f, "%s\n", msg);
+        fclose(f);
+    }
+    printf("%s\n", msg);
+}
+
+
+int main() {
     Tabela_Hash tabela;
-    Paciente pacientes[50];
-    int qtd = 0;
+    Deque fila;
+    Lista leitos;
+    Pilha historico;
+    char log_str[200];
+    int ciclo = 1;
+
+    srand(time(NULL));
 
     inicializar_tabela(&tabela);
-    ler_csv("pacientes.csv", pacientes, &qtd);
+    inicializar_deque(&fila);
+    inicializar_lista(&leitos);
+    historico.topo = -1;
 
-    for (int i = 0; i < qtd; i++) {
-        inserir(&tabela, pacientes[i]);
+    remove("processamento.log");
+    carregar_pacientes(&tabela, "pacientes.csv");
+
+    while (1) {
+        sprintf(log_str, "[CICLO %02d]", ciclo++);
+        registrar_log(log_str);
+
+        // Tenta internar
+        if (!esta_vazio(&fila) && leitos.ocupados < TAM_LISTA) {
+            Paciente p = remover_deque(&fila);
+            if (inserir_lista(&leitos, p)) {
+                sprintf(log_str, "INTERNADO - %s (prioridade %d)", p.id, p.prioridade);
+                registrar_log(log_str);
+            }
+        }
+
+        // Tenta dar alta se estiver cheio
+        if (leitos.ocupados == TAM_LISTA) {
+            if (remover_lista(&leitos, &historico, log_str)) {
+                registrar_log(log_str);
+            }
+        }
+
+        // Tenta inserir novo paciente na fila
+        if (!esta_cheio(&fila)) {
+            Paciente* p = sortear_paciente(&tabela);
+            if (p) {
+                inserir_deque(&fila, *p);
+                sprintf(log_str, "ESPERA - %s (prioridade %d)", p->id, p->prioridade);
+                registrar_log(log_str);
+            }
+        }
+
+        // Verifica encerramento da simulação
+        if (esta_vazio(&fila) && leitos.ocupados == 0) {
+            registrar_log("Simulação finalizada.");
+            break;
+        }
+
+        sleep(2);
     }
 
     return 0;

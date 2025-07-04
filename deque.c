@@ -21,26 +21,85 @@ int esta_vazio(Deque *d){
 }
 
 
-void insere_inicio(Deque *d, int valor){
+void insere_inicio(Deque *d, Paciente p){
     if(esta_cheio(d)){
         printf("Deque cheio!\n");
+
         return;
     }
 
-    if(esta_vazio(d)){
-        d->inicio = d->final = 0;
-        d->vetor[d->inicio] = valor;
-    }
-
-    else{
-        for(int i = d->tamanho; i > 0; i--){
-            d->vetor[i] = d->vetor[i - 1];
-        }
-        
-        d->inicio = 0;
-        d->vetor[d->inicio] = valor;
-        d->final++;
-    }
-
+    d->inicio = (d->inicio - 1 + TAM_DEQUE) % TAM_DEQUE;
+    d->dados[d->inicio] = p;
     d->tamanho++;
+}
+
+
+void insere_final(Deque *d, Paciente p){
+    if(esta_cheio(d)){
+        printf("Deque cheio!\n");
+
+        return;
+    }
+
+    d->final = (d->final + 1) % TAM_DEQUE;
+    d->dados[d->final] = p;
+    d->tamanho++;
+}
+
+
+Paciente remove_inicio(Deque *d){
+    Paciente removido = {0};
+
+    if (esta_vazio(d)) return removido;
+
+    removido = d->dados[d->inicio];
+    d->inicio = (d->inicio + 1) % TAM_DEQUE;
+    d->tamanho--;
+
+    return removido;
+}
+
+
+Paciente remove_final(Deque *d){
+    Paciente removido = {0};
+
+    if (esta_vazio(d)) return removido;
+
+    removido = d->dados[d->final];
+    d->final = (d->final - 1 + TAM_DEQUE) % TAM_DEQUE;
+    d->tamanho--;
+
+    return removido;
+}
+
+
+//------------------Prioridade------------------//
+
+
+void inserir_deque(Deque *d, Paciente p){
+    if(p.prioridade >= 4){
+        insere_inicio(d, p);
+    } 
+    
+    else{
+        insere_fim(d, p);
+    }
+}
+
+
+Paciente remover_deque(Deque *d){
+    Paciente frente = d->dados[d->inicio];
+    Paciente tras = d->dados[d->final];
+
+    if(frente.prioridade > tras.prioridade){
+        return remove_inicio(d);
+    } 
+    
+    else if(tras.prioridade > frente.prioridade){
+        return remove_final(d);
+    } 
+    
+    else{
+        return remove_inicio(d);
+    }
 }

@@ -16,18 +16,18 @@ typedef struct{
     char cpf[12];
     int prioridade;
     int atendido;
-}Paciente;
+} Paciente;
 
 
 typedef struct{
     Paciente dados;
     struct No *proximo;
-}No;
+} No;
 
 
 typedef struct{
     No *tabela[TAM_TABELA];
-}Tabela_Hash;
+} Tabela_Hash;
 
 
 typedef struct{
@@ -35,30 +35,43 @@ typedef struct{
   int inicio;
   int final;
   int tamanho;
-}Deque;
+} Deque;
 
 
 typedef struct{
     Paciente leitos[TAM_LISTA];
     int ocupados;
-}Lista;
+} Lista;
 
 
 typedef struct{
     Paciente vetor[TAM_PILHA];
     int topo;
-}Pilha;
+} Pilha;
 
 
-int funcao_hash(int prioridade);
-No *criar_no(Paciente paciente);
+// ------------------- TABELA HASH ------------------- //
 void inicializar_tabela(Tabela_Hash *tabela);
 void inserir_tabela(Tabela_Hash *tabela, Paciente p);
 Paciente* sortear_paciente(Tabela_Hash* h);
 
 
+// ---------------------- DEQUE ---------------------- //
 void inicializar_deque(Deque *d);
+int esta_cheio(Deque *d);
+int esta_vazio(Deque *d);
+void inserir_deque(Deque *d, Paciente p);
+Paciente remover_deque(Deque *d);
 
+
+// ---------------------- LISTA ---------------------- //
+void inicializar_lista(Lista *l);
+int inserir_lista(Lista *l, Paciente p);
+int remover_lista(Lista* l, Pilha* historico, char* log_str);
+
+
+// ---------------------- PILHA ---------------------- //
+void inserir_pilha(Pilha* p, Paciente dados);
 
 
 #endif
