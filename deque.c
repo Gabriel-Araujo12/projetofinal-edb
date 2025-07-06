@@ -73,9 +73,6 @@ Paciente remove_final(Deque *d){
 }
 
 
-//------------------Prioridade------------------//
-
-
 void inserir_deque(Deque *d, Paciente p){
     if(p.prioridade >= 4){
         insere_inicio(d, p);

@@ -9,7 +9,7 @@
 
 
 typedef struct{
-    char id[6];
+    char id[7];
     char nome[500];
     int idade;
     char sexo;
