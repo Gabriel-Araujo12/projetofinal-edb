@@ -24,4 +24,4 @@ tabela.o: tabela.c hospital.h
 	$(CC) $(CFLAGS) -c tabela.c
 
 clean:
-	rm -f *.o $(EXEC) processamento.log
+	rm -f *.o $(EXEC) ../Histórico/processamento.log

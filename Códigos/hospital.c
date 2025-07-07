@@ -28,7 +28,7 @@ void carregar_pacientes(Tabela_Hash *tabela, const char *arquivo){
 
 
 void registrar(const char *mensagem){
-    FILE* f = fopen("processamento.log", "a");
+    FILE* f = fopen("../Histórico/processamento.log", "a");
 
     if(f){
         fprintf(f, "%s\n", mensagem);
@@ -57,7 +57,7 @@ int main(){
     int ciclo = 1;
     srand(time(NULL));
 
-    carregar_pacientes(&tabela, "pacientes.csv");
+    carregar_pacientes(&tabela, "../Pacientes/pacientes.csv");
 
     while(1){
         sprintf(mensagem, "\n[CICLO %02d]", ciclo);
