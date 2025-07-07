@@ -1,0 +1,1 @@
+Este diretório é responsável por armazenar o arquivo "processamento.log" após a criação dele ao executar o projeto.
